@@ -1,0 +1,92 @@
+{
+  "profiles": [
+    {
+      "id": 1,
+      "name": "Aisha Khan",
+      "city": "Austin, TX",
+      "bio": "CS major, morning person who loves studying at coffee shops. Early sleeper looking for a quiet roommate.",
+      "tags": ["Non-Smoker", "Student", "Vegetarian"],
+      "compatibility": 78,
+      "avatar": "images/avatar-1.svg"
+    },
+    {
+      "id": 2,
+      "name": "Marcus Li",
+      "city": "San Diego, CA",
+      "bio": "Art & design student. Night owl, into gaming, movies, and cooking. Super chill and easy-going.",
+      "tags": ["Non-Smoker", "Night Owl", "Student", "Gamer"],
+      "compatibility": 65,
+      "avatar": "images/avatar-2.svg"
+    },
+    {
+      "id": 3,
+      "name": "Emma Rossi",
+      "city": "Boston, MA",
+      "bio": "Biology major, pre-med track. Quiet studious vibe, into hiking and yoga on weekends.",
+      "tags": ["Non-Smoker", "Student", "Early Bird", "Athlete"],
+      "compatibility": 82,
+      "avatar": "images/avatar-3.svg"
+    },
+    {
+      "id": 4,
+      "name": "Jordan Park",
+      "city": "Portland, OR",
+      "bio": "Engineering student, loves cooking international food. Looking for roommates who enjoy community dinners.",
+      "tags": ["Non-Smoker", "Foodie", "Student", "Social"],
+      "compatibility": 88,
+      "avatar": "images/avatar-1.svg"
+    },
+    {
+      "id": 5,
+      "name": "Sam Chen",
+      "city": "Seattle, WA",
+      "bio": "Business major, gym enthusiast, and coffee addict. Likes a clean shared space and responsible roommates.",
+      "tags": ["Non-Smoker", "Student", "Fitness", "Organized"],
+      "compatibility": 75,
+      "avatar": "images/avatar-2.svg"
+    }
+  ],
+  "rooms": [
+    {
+      "id": 1,
+      "title": "Sunny Private Room in Downtown",
+      "location": "Seattle, WA",
+      "type": "Private Room",
+      "price": 650,
+      "image": "images/room-1.svg",
+      "description": "Bright private bedroom with large windows and hardwood floors. Close to bus lines and downtown amenities. Utilities included. Furnished or unfurnished available."
+    },
+    {
+      "id": 2,
+      "title": "Shared Room in Student District",
+      "location": "Madison, WI",
+      "type": "Shared Room",
+      "price": 420,
+      "image": "images/room-2.svg",
+      "description": "Affordable shared room in a safe, student-friendly neighborhood. 10-minute walk to campus. Building has laundry, parking, and study lounge. Utilities split equally."
+    },
+    {
+      "id": 3,
+      "title": "Modern 1BR in Tech Hub",
+      "location": "Austin, TX",
+      "type": "Private Room",
+      "price": 725,
+      "image": "images/room-1.svg",
+      "description": "New construction apartment with modern kitchen and in-unit laundry. Walking distance to restaurants and shops. No smoking. Lease starting June or August."
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "profileId": 1,
+      "email": "aisha@example.com",
+      "password": "demo123"
+    },
+    {
+      "id": 2,
+      "profileId": 2,
+      "email": "marcus@example.com",
+      "password": "demo123"
+    }
+  ]
+}

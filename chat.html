@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Chat — RoomieSync</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-row">
+      <a class="logo" href="index.html">RoomieSync</a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="matches.html">Matches</a>
+        <a href="rooms.html">Rooms</a>
+        <a href="chat.html">Chat</a>
+        <a href="login.html" class="btn btn-outline">Login</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+    </div>
+  </header>
+
+  <main class="container chat-page">
+    <section class="card chat-card">
+      <div class="chat-header">
+        <div>
+          <h2>RoomieSync Chat</h2>
+          <p class="muted">Connect with roommates and ask questions about living together.</p>
+        </div>
+      </div>
+
+      <div class="chat-body" id="chatBody">
+        <div id="chatList" class="chat-list"></div>
+      </div>
+
+      <div class="chat-footer">
+        <p id="chatNotice" class="muted"></p>
+        <form id="chatForm" class="chat-form">
+          <input id="chatInput" type="text" placeholder="Type a message..." autocomplete="off">
+          <button class="btn btn-primary" type="submit">Send</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 RoomieSync</p>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login / Register — RoomieSync</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-row">
+      <a class="logo" href="index.html">RoomieSync</a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="matches.html">Matches</a>
+        <a href="rooms.html">Rooms</a>
+        <a href="chat.html">Chat</a>
+        <a href="login.html" class="btn btn-outline">Login</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+    </div>
+  </header>
+
+  <main class="container auth-page">
+    <section class="auth-card card">
+      <h2>Welcome to RoomieSync</h2>
+      <div class="auth-forms">
+        <form id="loginForm" class="auth-form">
+          <h3>Login</h3>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="loginEmail" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="loginPassword" placeholder="••••••" required>
+          </div>
+          <div id="errorMessage" class="form-error"></div>
+          <button class="btn btn-primary" id="loginBtn" type="submit">Login</button>
+        </form>
+
+        <div class="divider">or</div>
+
+        <form id="registerForm" class="auth-form">
+          <h3>Register</h3>
+          <div class="form-group">
+            <label>Name</label>
+            <input type="text" id="registerName" placeholder="Your name" required>
+          </div>
+          <div class="form-group">
+            <label>Email</label>
+            <input type="email" id="registerEmail" placeholder="you@example.com" required>
+          </div>
+          <div class="form-group">
+            <label>Password</label>
+            <input type="password" id="registerPassword" placeholder="Choose a password" required>
+          </div>
+          <div class="form-group">
+            <label>City</label>
+            <input type="text" id="registerCity" placeholder="Your city" required>
+          </div>
+          <div class="form-group">
+            <label>Bio</label>
+            <textarea id="registerBio" placeholder="Tell roommates a little about you" rows="3"></textarea>
+          </div>
+          <div id="registerError" class="form-error"></div>
+          <button class="btn" id="registerBtn" type="submit">Register</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 RoomieSync</p>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>

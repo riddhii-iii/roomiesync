@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Post Room — RoomieSync</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container nav-row">
+      <a class="logo" href="index.html">RoomieSync</a>
+      <nav class="nav">
+        <a href="index.html">Home</a>
+        <a href="matches.html">Matches</a>
+        <a href="rooms.html">Rooms</a>
+        <a href="chat.html">Chat</a>
+        <a href="login.html" class="btn btn-outline">Login</a>
+      </nav>
+      <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">☰</button>
+    </div>
+  </header>
+
+  <main class="container post-room-page">
+    <section class="card room-form-card">
+      <h1>Post a Room</h1>
+      <p class="muted">Create a new room listing that other students can browse.</p>
+      <form id="roomPostForm" class="room-form">
+        <div class="form-group">
+          <label>Title</label>
+          <input type="text" id="roomTitle" placeholder="Sunny private room" required>
+        </div>
+        <div class="form-group">
+          <label>Location</label>
+          <input type="text" id="roomLocation" placeholder="Example: Boston, MA" required>
+        </div>
+        <div class="form-group">
+          <label>Room Type</label>
+          <select id="roomType" required>
+            <option value="Private Room">Private Room</option>
+            <option value="Shared Room">Shared Room</option>
+            <option value="Studio">Studio</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Price per month</label>
+          <input type="number" id="roomPrice" placeholder="450" required>
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="roomDescription" rows="4" placeholder="Add a short description of the room, utilities, and commute." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Room image</label>
+          <input type="file" id="roomImage" accept="image/*">
+        </div>
+        <div class="form-group">
+          <img id="roomImagePreview" class="room-preview" alt="Room preview" style="display:none">
+        </div>
+        <div id="roomError" class="form-error"></div>
+        <button class="btn btn-primary" id="postRoomBtn" type="submit">Post room</button>
+      </form>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>&copy; 2026 RoomieSync</p>
+    </div>
+  </footer>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
