@@ -1,9 +1,9 @@
 # RoomieSync - Quick Start Guide
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Demo Login Credentials
-```
+
 Email: aisha@example.com
 Password: demo123
 
@@ -11,29 +11,29 @@ OR
 
 Email: marcus@example.com
 Password: demo123
-```
+
 
 ### Quick User Flow
 
 #### 1. **First Time Visit**
-- Go to `index.html`
-- Click "Get Started" → redirects to login
-- Or click "Login" button → goes to login page
+- Go to index.html
+- Click "Get Started" redirects to login
+- Or click "Login" button  goes to login page
 
 #### 2. **Login**
-- Enter email: `aisha@example.com`
-- Enter password: `demo123`
+- Enter email: aisha@example.com
+- Enter password: demo123
 - Click "Login"
-- ✅ Redirected to home page
-- ✅ Navbar now shows: Profile, Post Room, Logout
+- Redirected to home page
+- Navbar now shows: Profile, Post Room, Logout
 
 #### 3. **Register New Account**
 - On login page, scroll to "Register" section
 - Fill in: Name, Email, Password, City, Bio
 - Click "Register"
-- ✅ New account created
-- ✅ Auto-logged in
-- ✅ Redirected to home page
+- New account created
+- Auto-logged in
+- Redirected to home page
 
 #### 4. **Browse Roommates**
 - Click "Matches" in navbar
@@ -58,41 +58,41 @@ Password: demo123
   - Description
   - Upload image (optional)
 - Click "Post room"
-- ✅ Redirected to rooms page
-- ✅ Your listing appears
+- Redirected to rooms page
+- Your listing appears
 
 #### 7. **Edit Your Profile**
 - Click "Profile" in navbar (or Profile icon)
 - Edit Name, City, Bio, Tags
 - Upload new avatar image
 - Click "Save profile"
-- ✅ Changes saved immediately
-- ✅ Changes persist after refresh
+- Changes saved immediately
+- Changes persist after refresh
 
 #### 8. **Community Chat**
 - Click "Chat" in navbar
 - See previous messages
 - Type a message and send
-- ✅ Your message appears
-- ✅ Messages persist
+- Your message appears
+- Messages persist
 
 #### 9. **Mobile Testing**
 - Resize browser to mobile size (< 768px)
-- Click hamburger menu (☰)
+- Click hamburger menu ()
 - See navigation items stacked
-- Click a link → menu closes
-- ✅ All buttons are clickable
-- ✅ Forms are readable
+- Click a link  menu closes
+- All buttons are clickable
+- Forms are readable
 
 #### 10. **Logout**
 - Click "Logout" button in navbar
-- ✅ Redirected to login page
-- ✅ Session cleared
-- ✅ Try accessing /profile.html → redirects to login
+- Redirected to login page
+- Session cleared
+- Try accessing /profile.html  redirects to login
 
 ---
 
-## 🔍 Testing Checklist
+## Testing Checklist
 
 ### Desktop (1024px+)
 - [ ] Home page loads with full hero layout
@@ -126,53 +126,53 @@ Password: demo123
 
 ---
 
-## 📁 File Structure
+## File Structure
 
-```
+
 RoomieSync/
-├── index.html              (Home page)
-├── login.html              (Login/Register)
-├── matches.html            (Browse roommates)
-├── rooms.html              (Browse rooms)
-├── profile.html            (User profile)
-├── post-room.html          (Create listing)
-├── chat.html               (Community chat)
-├── data.json               (Demo data)
-├── css/
-│   └── style.css           (All styles)
-├── js/
-│   └── script.js           (All functionality)
-├── images/
-│   ├── avatar-1.svg
-│   ├── avatar-2.svg
-│   ├── avatar-3.svg
-│   ├── room-1.svg
-│   └── room-2.svg
-└── DEPLOYMENT_CHECKLIST.md (This file)
-```
+ index.html              (Home page)
+ login.html              (Login/Register)
+ matches.html            (Browse roommates)
+ rooms.html              (Browse rooms)
+ profile.html            (User profile)
+ post-room.html          (Create listing)
+ chat.html               (Community chat)
+ data.json               (Demo data)
+ css/
+    style.css           (All styles)
+ js/
+    script.js           (All functionality)
+ images/
+    avatar-1.svg
+    avatar-2.svg
+    avatar-3.svg
+    room-1.svg
+    room-2.svg
+ DEPLOYMENT_CHECKLIST.md (This file)
+
 
 ---
 
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### CSS not loading?
-- Check: `css/style.css` exists
-- Check: Not from `images/css/` (old location)
+- Check: css/style.css exists
+- Check: Not from images/css/ (old location)
 - Refresh browser (Ctrl+F5)
 
 ### Login not working?
-- Use exact email: `aisha@example.com`
-- Use exact password: `demo123`
+- Use exact email: aisha@example.com
+- Use exact password: demo123
 - Check browser console for errors
 
 ### Images not showing?
-- Check: `images/` folder has avatars and rooms
+- Check: images/ folder has avatars and rooms
 - Check: Console for 404 errors
 - Images are SVG files (vector graphics)
 
 ### Can't access profile page?
 - Must be logged in
-- Without login → redirected to login.html
+- Without login  redirected to login.html
 - Try logging in first
 
 ### Data disappears after refresh?
@@ -182,38 +182,38 @@ RoomieSync/
 
 ---
 
-## 🎯 Key Features to Test
+## Key Features to Test
 
-1. **Authentication** ✅
+1. **Authentication** 
    - Login with credentials
    - Register new account
    - Logout clears session
    - Protected pages redirect
 
-2. **Navigation** ✅
+2. **Navigation** 
    - All links work
    - Mobile menu works
    - Navbar updates on login/logout
 
-3. **Data Persistence** ✅
+3. **Data Persistence** 
    - Profile updates save
    - Room listings persist
    - Chat messages persist
    - Session persists on refresh
 
-4. **Responsiveness** ✅
+4. **Responsiveness** 
    - Desktop layout works
    - Tablet layout works
    - Mobile layout works
    - No horizontal scrolling
 
-5. **Forms** ✅
+5. **Forms** 
    - Login form works
    - Register form validates
    - Room form uploads images
    - Profile form saves updates
 
-6. **Images** ✅
+6. **Images** 
    - Avatars display
    - Room images display
    - Image upload works
@@ -221,7 +221,7 @@ RoomieSync/
 
 ---
 
-## 📝 Notes for First-Time Users
+## Notes for First-Time Users
 
 - This is a **prototype** with demo data
 - No real user data collection
@@ -233,7 +233,7 @@ RoomieSync/
 
 ---
 
-## 🚀 Deployment
+## Deployment
 
 Ready to deploy! Just upload to:
 - **Vercel**: Connect GitHub repo
@@ -244,4 +244,6 @@ No build step needed. Pure HTML/CSS/JavaScript.
 
 ---
 
-**Happy Testing! 🎉**
+**Happy Testing! **
+
+

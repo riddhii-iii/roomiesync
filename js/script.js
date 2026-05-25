@@ -8,6 +8,7 @@
 
 const DEMO_IMAGE = 'images/room-1.svg';
 const DEMO_AVATAR = 'images/avatar-1.svg';
+const THEME_KEY = 'roomieSyncTheme';
 
 let appData = { profiles: [], rooms: [] };
 let currentUser = null;
@@ -15,6 +16,41 @@ let currentProfile = null;
 
 function qs(selector) { return document.querySelector(selector); }
 function qsa(selector) { return Array.from(document.querySelectorAll(selector)); }
+
+function getSavedTheme() {
+  return localStorage.getItem(THEME_KEY) || 'light';
+}
+
+function applyTheme(theme) {
+  const selectedTheme = theme === 'dark' ? 'dark' : 'light';
+  document.documentElement.dataset.theme = selectedTheme;
+  localStorage.setItem(THEME_KEY, selectedTheme);
+
+  const toggle = qs('#themeToggle');
+  if (toggle) {
+    toggle.setAttribute('aria-label', `Switch to ${selectedTheme === 'dark' ? 'light' : 'dark'} mode`);
+    toggle.innerHTML = selectedTheme === 'dark'
+      ? '<span class="theme-icon">☀</span><span>Light</span>'
+      : '<span class="theme-icon">☾</span><span>Dark</span>';
+  }
+}
+
+function initThemeToggle() {
+  const nav = qs('.nav');
+  if (!nav || qs('#themeToggle')) return;
+
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.id = 'themeToggle';
+  button.className = 'theme-toggle';
+  nav.appendChild(button);
+
+  applyTheme(getSavedTheme());
+  button.addEventListener('click', () => {
+    const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    applyTheme(nextTheme);
+  });
+}
 
 function hasFirebase() {
   return Boolean(window.firebase && window.auth && window.db && window.storage);
@@ -766,6 +802,8 @@ function bootWithAuth() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  applyTheme(getSavedTheme());
+  initThemeToggle();
   initAuthForms();
   initGetStarted();
   initNavToggles();

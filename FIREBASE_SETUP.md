@@ -9,13 +9,13 @@ RoomieSync is still a static HTML/CSS/JavaScript project. Firebase is the shared
 3. Enable Authentication, then turn on Email/Password.
 4. Create a Firestore Database.
 5. Enable Firebase Storage.
-6. Copy the Firebase web config into `firebase-config.js`.
+6. Copy the Firebase web config into firebase-config.js.
 
 ## 2. Firestore Collections
 
-`profiles/{userId}` stores public roommate profiles:
+profiles/{userId} stores public roommate profiles:
 
-```js
+js
 {
   name,
   email,
@@ -26,11 +26,11 @@ RoomieSync is still a static HTML/CSS/JavaScript project. Firebase is the shared
   preferences,
   lookingFor
 }
-```
 
-`rooms/{autoId}` stores public room listings:
 
-```js
+rooms/{autoId} stores public room listings:
+
+js
 {
   title,
   location,
@@ -43,7 +43,7 @@ RoomieSync is still a static HTML/CSS/JavaScript project. Firebase is the shared
   roommatePreference,
   moveInDate
 }
-```
+
 
 ## 3. Simple Rules for a Student Demo
 
@@ -51,7 +51,7 @@ Use these only for a beginner project/demo. For a real product, rules should be 
 
 Firestore rules:
 
-```txt
+txt
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -67,11 +67,11 @@ service cloud.firestore {
     }
   }
 }
-```
+
 
 Storage rules:
 
-```txt
+txt
 rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
@@ -86,4 +86,6 @@ service firebase.storage {
     }
   }
 }
-```
+
+
+
