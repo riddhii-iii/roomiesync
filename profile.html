@@ -3,11 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Profile — RoomieSync</title>
+  <title>Profile - RoomieSync</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- Animated background elements -->
+  <div class="glow-blob-1"></div>
+  <div class="glow-blob-2"></div>
+  
   <header class="site-header">
     <div class="container nav-row">
       <a class="logo" href="index.html">RoomieSync</a>
@@ -24,16 +28,21 @@
 
   <main class="container profile-page">
     <section class="profile-card card">
-      <!-- profile content will be rendered here from data.json (use ?id= to choose) -->
+      <!-- Profile data is loaded from Firestore. Use ?id= to view a public profile. -->
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container">
-      <p>&copy; 2026 RoomieSync</p>
+      <p>&copy; 2026 RoomieSync - A modern student project.</p>
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+  <script src="firebase-config.js"></script>
   <script src="js/script.js"></script>
 </body>
 </html>

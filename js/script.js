@@ -1,120 +1,81 @@
-const STORAGE_KEYS = {
-  users: 'roomieSyncUsers',
-  profiles: 'roomieSyncProfiles',
-  rooms: 'roomieSyncRooms',
-  currentUser: 'roomieSyncCurrentUser',
-  chat: 'roomieSyncChat'
-};
+/* RoomieSync Firebase app
+   -----------------------
+   This is still a simple static website. Firebase provides the shared backend:
+   - Firebase Auth: email/password signup, login, logout
+   - Firestore: public profile documents and room listing documents
+   - Storage: uploaded profile photos and room images
+*/
 
-let appData = null;
+const DEMO_IMAGE = 'images/room-1.svg';
+const DEMO_AVATAR = 'images/avatar-1.svg';
+
+let appData = { profiles: [], rooms: [] };
+let currentUser = null;
+let currentProfile = null;
 
 function qs(selector) { return document.querySelector(selector); }
 function qsa(selector) { return Array.from(document.querySelectorAll(selector)); }
-function readPersisted(key) {
-  const raw = localStorage.getItem(key);
-  if (!raw) return [];
-  try { return JSON.parse(raw); } catch (err) { return []; }
-}
-function writePersisted(key, data) {
-  localStorage.setItem(key, JSON.stringify(data));
+
+function hasFirebase() {
+  return Boolean(window.firebase && window.auth && window.db && window.storage);
 }
 
-function getCurrentUserId() {
-  const id = localStorage.getItem(STORAGE_KEYS.currentUser);
-  return id ? parseInt(id, 10) : null;
+function escapeHTML(value = '') {
+  return String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#039;');
 }
 
-function getCurrentUser() {
-  const userId = getCurrentUserId();
-  if (!userId || !appData) return null;
-  const user = (appData.users || []).find(u => u.id === userId);
-  if (!user) return null;
-  const profile = (appData.profiles || []).find(p => p.id === user.profileId) || {
-    id: user.profileId,
-    name: user.email.split('@')[0],
-    city: 'Campus community',
-    bio: 'A roommate who is excited to share a student-friendly space.',
-    tags: ['Student'],
-    avatar: 'images/avatar-1.svg'
-  };
-  return { ...user, profile };
+function money(value) {
+  const amount = Number(value || 0);
+  return '₹' + amount.toLocaleString('en-IN');
 }
 
-function getProfileById(id) {
-  return (appData.profiles || []).find(p => String(p.id) === String(id));
+function tagsFromText(text) {
+  return String(text || '')
+    .split(',')
+    .map(item => item.trim())
+    .filter(Boolean);
 }
 
-function getUserByEmail(email) {
-  return (appData.users || []).find(u => u.email.toLowerCase() === email.toLowerCase());
+function arrayIntersection(a = [], b = []) {
+  return a.filter(item => b.includes(item));
 }
 
-function getNextId(items) {
-  if (!items || items.length === 0) return 1;
-  return items.reduce((max, item) => Math.max(max, item.id || 0), 0) + 1;
-}
+function computeCompatibility(a = {}, b = {}) {
+  let score = 45;
+  const aPrefs = a.preferences || {};
+  const bPrefs = b.preferences || {};
 
-async function loadData() {
-  try {
-    const res = await fetch('data.json');
-    if (!res.ok) throw new Error('Failed to load data.json');
-    const fileData = await res.json();
+  if (a.city && b.city && a.city.toLowerCase() === b.city.toLowerCase()) score += 12;
+  if (aPrefs.food && bPrefs.food && aPrefs.food === bPrefs.food) score += 12;
+  if (aPrefs.sleep && bPrefs.sleep && aPrefs.sleep === bPrefs.sleep) score += 12;
+  if (aPrefs.smoking && bPrefs.smoking && aPrefs.smoking === bPrefs.smoking) score += 10;
+  if (aPrefs.pets && bPrefs.pets && aPrefs.pets === bPrefs.pets) score += 8;
 
-    const persistedProfiles = readPersisted(STORAGE_KEYS.profiles);
-    const persistedRooms = readPersisted(STORAGE_KEYS.rooms);
-    const persistedUsers = readPersisted(STORAGE_KEYS.users);
+  const budgetDiff = Math.abs(Number(aPrefs.budget || 0) - Number(bPrefs.budget || 0));
+  if (aPrefs.budget && bPrefs.budget && budgetDiff <= 3000) score += 12;
 
-    appData = {
-      profiles: [...(fileData.profiles || []), ...persistedProfiles],
-      rooms: [...(fileData.rooms || []), ...persistedRooms],
-      users: [...(fileData.users || []), ...persistedUsers]
-    };
-
-    renderHeroPreview(appData);
-    renderMatches(appData);
-    renderRooms(appData);
-    renderProfileIfNeeded(appData);
-    initPostRoomPage(appData);
-    updateNavbarLoginState();
-    initChatPage();
-  } catch (err) {
-    console.error('Data loading error:', err);
-    appData = { profiles: [], rooms: [], users: [] };
-    updateNavbarLoginState();
-    initChatPage();
-  }
-}
-
-function loadAppData() {
-  return appData || loadData();
-}
-
-function getLoggedInState() {
-  return localStorage.getItem(STORAGE_KEYS.currentUser) !== null;
-}
-
-function requireLogin() {
-  if (!getLoggedInState()) {
-    window.location.href = 'login.html';
-    return false;
-  }
-  return true;
-}
-
-function loginUser(user) {
-  localStorage.setItem(STORAGE_KEYS.currentUser, String(user.id));
-  localStorage.setItem('roomieSyncEmail', user.email);
-}
-
-function logoutUser() {
-  localStorage.removeItem(STORAGE_KEYS.currentUser);
-  localStorage.removeItem('roomieSyncEmail');
-  localStorage.removeItem('loggedIn');
-  localStorage.removeItem('userEmail');
+  score += Math.min(arrayIntersection(a.tags || [], b.tags || []).length * 5, 15);
+  return Math.max(40, Math.min(99, Math.round(score)));
 }
 
 function showError(element, message) {
   if (!element) return;
   element.textContent = message;
+  element.classList.add('show');
+  element.style.display = 'block';
+}
+
+function showSuccess(element, message) {
+  if (!element) return;
+  element.textContent = message;
+  element.style.color = '#10B981';
+  element.style.background = 'rgba(16, 185, 129, 0.12)';
+  element.style.borderColor = 'rgba(16, 185, 129, 0.35)';
   element.classList.add('show');
   element.style.display = 'block';
 }
@@ -126,639 +87,687 @@ function hideError(element) {
   element.style.display = 'none';
 }
 
-function setButtonLoading(button, message) {
+function setButtonLoading(button, text) {
   if (!button) return;
   button.disabled = true;
-  button.innerText = message;
+  button.dataset.originalText = button.dataset.originalText || button.textContent;
+  button.textContent = text;
 }
 
-function resetButton(button, text) {
+function resetButton(button) {
   if (!button) return;
   button.disabled = false;
-  button.innerText = text;
+  button.textContent = button.dataset.originalText || button.textContent;
 }
 
-async function handleLogin(event) {
-  event.preventDefault();
-  const email = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value.trim();
-  const errorMsg = document.getElementById('errorMessage');
-  const loginBtn = document.getElementById('loginBtn');
-
-  if (!email || !password) {
-    showError(errorMsg, 'Please enter both email and password');
-    return;
-  }
-
-  if (!email.includes('@')) {
-    showError(errorMsg, 'Please enter a valid email');
-    return;
-  }
-
-  hideError(errorMsg);
-  setButtonLoading(loginBtn, 'Signing in...');
-
+async function fetchStarterData() {
   try {
-    const data = await loadAppData();
-    const user = getUserByEmail(email);
-    if (!user || user.password !== password) {
-      showError(errorMsg, 'Email or password is incorrect');
-      resetButton(loginBtn, 'Login');
-      return;
-    }
-
-    loginUser(user);
-    setTimeout(() => {
-      window.location.href = 'index.html';
-    }, 300);
-  } catch (err) {
-    showError(errorMsg, 'An error occurred. Please try again.');
-    resetButton(loginBtn, 'Login');
-    console.error('Login error:', err);
+    const res = await fetch('data.json');
+    if (!res.ok) throw new Error('Could not load demo data');
+    return await res.json();
+  } catch (error) {
+    return { profiles: [], rooms: [] };
   }
 }
 
-async function handleRegister(event) {
-  event.preventDefault();
-  const name = document.getElementById('registerName').value.trim();
-  const email = document.getElementById('registerEmail').value.trim();
-  const password = document.getElementById('registerPassword').value.trim();
-  const city = document.getElementById('registerCity').value.trim();
-  const bio = document.getElementById('registerBio').value.trim();
-  const errorMsg = document.getElementById('registerError');
-  const registerBtn = document.getElementById('registerBtn');
-
-  if (!name || !email || !password || !city) {
-    showError(errorMsg, 'Please fill all required fields');
-    return;
-  }
-
-  if (!email.includes('@')) {
-    showError(errorMsg, 'Please enter a valid email');
-    return;
-  }
-
-  if (name.length < 2) {
-    showError(errorMsg, 'Name must be at least 2 characters');
-    return;
-  }
-
-  if (password.length < 6) {
-    showError(errorMsg, 'Password must be at least 6 characters');
-    return;
-  }
-
-  hideError(errorMsg);
-  setButtonLoading(registerBtn, 'Creating account...');
-
-  try {
-    const data = await loadAppData();
-    if (getUserByEmail(email)) {
-      showError(errorMsg, 'An account already exists with that email');
-      resetButton(registerBtn, 'Register');
-      return;
-    }
-
-    const storedUsers = readPersisted(STORAGE_KEYS.users);
-    const storedProfiles = readPersisted(STORAGE_KEYS.profiles);
-    const newProfileId = getNextId([...appData.profiles, ...storedProfiles]);
-    const newUserId = getNextId([...appData.users, ...storedUsers]);
-    const profile = {
-      id: newProfileId,
-      name,
-      city,
-      bio: bio || 'A friendly roommate looking for a great living match.',
-      tags: ['Student', 'Roommate'],
-      avatar: 'images/avatar-1.svg'
-    };
-    const user = {
-      id: newUserId,
-      profileId: newProfileId,
-      email,
-      password
-    };
-
-    writePersisted(STORAGE_KEYS.profiles, [...storedProfiles, profile]);
-    writePersisted(STORAGE_KEYS.users, [...storedUsers, user]);
-    loginUser(user);
-
-    setTimeout(() => {
-      window.location.href = 'index.html';
-    }, 500);
-  } catch (err) {
-    showError(errorMsg, 'An error occurred. Please try again.');
-    resetButton(registerBtn, 'Register');
-    console.error('Registration error:', err);
-  }
-}
-
-function initAuthForms() {
-  const loginForm = document.getElementById('loginForm');
-  if (loginForm) {
-    loginForm.addEventListener('submit', handleLogin);
-  }
-
-  const registerForm = document.getElementById('registerForm');
-  if (registerForm) {
-    registerForm.addEventListener('submit', handleRegister);
-  }
-}
-
-function initGetStarted() {
-  const getStartedBtn = document.getElementById('getStartedBtn');
-  if (!getStartedBtn) return;
-  getStartedBtn.addEventListener('click', (event) => {
-    event.preventDefault();
-    if (getLoggedInState()) {
-      window.location.href = 'matches.html';
-    } else {
-      window.location.href = 'login.html';
-    }
+function firebaseSetupMessage() {
+  const message = `
+    <div class="placeholder-loading">
+      Connect your Firebase config in <strong>firebase-config.js</strong> to load shared public data.
+    </div>
+  `;
+  qsa('.matches-grid, .rooms-grid, .featured-rooms-grid').forEach(container => {
+    container.innerHTML = message;
   });
 }
 
-function initNavToggles() {
-  const navToggle = document.getElementById('navToggle');
-  const mainNav = document.getElementById('mainNav');
-  if (navToggle && mainNav) {
-    navToggle.addEventListener('click', () => {
-      mainNav.classList.toggle('open');
-    });
-    // Close menu when a link is clicked
-    const navLinks = mainNav.querySelectorAll('a');
-    navLinks.forEach(link => {
-      link.addEventListener('click', () => {
-        mainNav.classList.remove('open');
-      });
-    });
+async function loadProfilesFromFirestore() {
+  const snapshot = await db.collection('profiles').orderBy('createdAt', 'desc').get();
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+async function loadRoomsFromFirestore() {
+  const snapshot = await db.collection('rooms').orderBy('createdAt', 'desc').get();
+  return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+}
+
+async function loadSharedData() {
+  const starter = await fetchStarterData();
+
+  if (!hasFirebase()) {
+    appData = {
+      profiles: starter.profiles || [],
+      rooms: starter.rooms || []
+    };
+    renderAll();
+    return;
+  }
+
+  try {
+    const [profiles, rooms] = await Promise.all([
+      loadProfilesFromFirestore(),
+      loadRoomsFromFirestore()
+    ]);
+
+    appData = {
+      profiles: [...profiles, ...(starter.profiles || [])],
+      rooms: [...rooms, ...(starter.rooms || [])]
+    };
+    renderAll();
+  } catch (error) {
+    console.error('Firestore load error:', error);
+    appData = { profiles: starter.profiles || [], rooms: starter.rooms || [] };
+    renderAll();
   }
 }
 
-function renderHeroPreview(data) {
+async function loadCurrentProfile(user) {
+  if (!user || !hasFirebase()) return null;
+  const doc = await db.collection('profiles').doc(user.uid).get();
+  return doc.exists ? { id: doc.id, ...doc.data() } : null;
+}
+
+async function uploadImage(file, folder) {
+  if (!file) return '';
+  if (!file.type.startsWith('image/')) throw new Error('Please upload an image file.');
+  if (file.size > 3 * 1024 * 1024) throw new Error('Image size must be below 3 MB.');
+
+  // Image upload flow:
+  // 1. Put the file in Firebase Storage.
+  // 2. Get its public download URL.
+  // 3. Save that URL in Firestore, so all users can display the image.
+  const safeName = file.name.replace(/[^a-z0-9.]/gi, '-').toLowerCase();
+  const path = `${folder}/${Date.now()}-${safeName}`;
+  const snapshot = await storage.ref(path).put(file);
+  return snapshot.ref.getDownloadURL();
+}
+
+function getProfileById(id) {
+  return appData.profiles.find(profile => String(profile.id) === String(id));
+}
+
+function requireLogin() {
+  if (currentUser) return true;
+  window.location.href = 'login.html';
+  return false;
+}
+
+function updateNavbarLoginState() {
+  const nav = qs('.nav');
+  if (!nav) return;
+
+  const loginLink = nav.querySelector('a[href="login.html"]');
+  const logoutButton = nav.querySelector('.logout-btn');
+  const profileLink = nav.querySelector('a[href="profile.html"]');
+  const postRoomLink = nav.querySelector('a[href="post-room.html"]');
+
+  if (currentUser) {
+    if (!profileLink) loginLink?.insertAdjacentHTML('beforebegin', '<a href="profile.html">Profile</a>');
+    if (!postRoomLink) loginLink?.insertAdjacentHTML('beforebegin', '<a href="post-room.html">Post Room</a>');
+    if (loginLink) {
+      loginLink.textContent = 'Logout';
+      loginLink.href = '#';
+      loginLink.classList.add('logout-btn');
+      loginLink.addEventListener('click', handleLogout);
+    }
+  } else {
+    profileLink?.remove();
+    postRoomLink?.remove();
+    if (logoutButton) {
+      logoutButton.textContent = 'Login';
+      logoutButton.href = 'login.html';
+      logoutButton.classList.remove('logout-btn');
+      logoutButton.removeEventListener('click', handleLogout);
+    }
+  }
+}
+
+function renderAll() {
+  renderHeroPreview();
+  renderFeaturedRooms();
+  renderMatches();
+  renderRooms();
+  renderProfileIfNeeded();
+}
+
+function renderHeroPreview() {
   const preview = qs('.hero-right .roommate-card.preview');
   if (!preview) return;
-  const currentUser = getCurrentUser();
-  const p = currentUser ? currentUser.profile : (data.profiles || [])[0];
-  if (!p) return;
+  const profile = currentProfile || appData.profiles[0];
+  if (!profile) return;
+  const compat = currentProfile ? computeCompatibility(currentProfile, profile) : (profile.compatibility || 86);
+
   preview.innerHTML = `
-    <img src="${p.avatar}" alt="Profile" class="avatar">
+    <img src="${escapeHTML(profile.avatar || profile.photoURL || DEMO_AVATAR)}" alt="${escapeHTML(profile.name)}" class="avatar">
     <div class="card-body">
       <div class="card-header">
-        <h3>${p.name}</h3>
-        <div class="compat">${p.compatibility || 90}%</div>
+        <h3>${escapeHTML(profile.name)}</h3>
+        <div class="compat">${compat}% Match</div>
       </div>
-      <p class="muted">${p.city}</p>
-      <p class="bio">${p.bio}</p>
-      <div class="tags">${(p.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
-      <div class="card-actions"><button class="btn btn-outline" onclick="demoAction()">Message</button></div>
+      <p class="muted">${escapeHTML(profile.city || 'Campus community')}</p>
+      <p class="bio">${escapeHTML(profile.bio || 'Looking for a compatible roommate.')}</p>
+      <div class="tags">${(profile.tags || ['Student']).map(tag => `<span class="tag">${escapeHTML(tag)}</span>`).join('')}</div>
     </div>
   `;
 }
 
-function renderMatches(data) {
+function renderMatches() {
   const grid = qs('.matches-grid');
   if (!grid) return;
-  grid.innerHTML = '';
-  const profiles = data.profiles || [];
-  profiles.forEach(profile => {
-    const card = document.createElement('div');
-    card.className = 'card roommate-card';
-    card.innerHTML = `
-      <img src="${profile.avatar}" alt="Profile" class="avatar">
+
+  const profiles = appData.profiles
+    .filter(profile => !currentUser || profile.id !== currentUser.uid)
+    .map(profile => ({
+      ...profile,
+      compatibility: currentProfile ? computeCompatibility(currentProfile, profile) : (profile.compatibility || 75)
+    }))
+    .sort((a, b) => b.compatibility - a.compatibility);
+
+  if (!profiles.length) {
+    grid.innerHTML = '<div class="placeholder-loading">No roommate profiles yet. Create your profile to appear here.</div>';
+    return;
+  }
+
+  grid.innerHTML = profiles.map(profile => `
+    <article class="card roommate-card">
+      <img src="${escapeHTML(profile.avatar || profile.photoURL || DEMO_AVATAR)}" alt="${escapeHTML(profile.name)}" class="avatar">
       <div class="card-body">
         <div class="card-header">
-          <h3>${profile.name}</h3>
-          <div class="compat">${profile.compatibility || 80}%</div>
+          <h3>${escapeHTML(profile.name || 'Roommate')}</h3>
+          <div class="compat">${profile.compatibility}% Compatible</div>
         </div>
-        <p class="muted">${profile.city}</p>
-        <p class="bio">${profile.bio}</p>
-        <div class="tags">${(profile.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
+        <p class="muted">${escapeHTML(profile.age ? `${profile.age} years` : 'Age not added')} • ${escapeHTML(profile.city || 'City not added')}</p>
+        <p class="muted">${escapeHTML(profile.occupation || 'Student / young professional')}</p>
+        <p class="bio">${escapeHTML(profile.bio || 'This roommate has not added a bio yet.')}</p>
+        <div class="tags">${(profile.tags || []).map(tag => `<span class="tag">${escapeHTML(tag)}</span>`).join('')}</div>
+        <div class="match-signals">
+          <span>${escapeHTML(profile.preferences?.sleep || 'Flexible')}</span>
+          <span>${escapeHTML(profile.preferences?.food || 'Any food')}</span>
+          <span>${money(profile.preferences?.budget || 0)} budget</span>
+        </div>
         <div class="card-actions">
-          <button class="btn" onclick="demoAction()">Message</button>
-          <a class="btn btn-ghost" href="profile.html?id=${profile.id}">View profile</a>
+          <a class="btn btn-ghost" href="profile.html?id=${encodeURIComponent(profile.id)}">View Profile</a>
         </div>
       </div>
-    `;
-    grid.appendChild(card);
-  });
+    </article>
+  `).join('');
 }
 
-function renderRooms(data) {
+function roomCard(room) {
+  return `
+    <article class="card room-card">
+      <img src="${escapeHTML(room.image || room.imageUrl || DEMO_IMAGE)}" alt="${escapeHTML(room.title || 'Room image')}" class="room-img">
+      <div class="card-body">
+        <div class="room-card-topline">
+          <span>${escapeHTML(room.type || 'Room')}</span>
+          <strong>${money(room.price || room.rent || 0)} / month</strong>
+        </div>
+        <h3>${escapeHTML(room.title || 'Available room')}</h3>
+        <p class="muted">${escapeHTML(room.location || room.city || 'Location not added')}</p>
+        <p class="bio">${escapeHTML(room.description || 'No description added yet.')}</p>
+        <div class="room-meta">
+          <span>Posted by ${escapeHTML(room.ownerName || room.username || 'RoomieSync user')}</span>
+          <span>${escapeHTML(room.roommatePreference || 'Any roommate')}</span>
+          <span>Move-in: ${escapeHTML(room.moveInDate || 'Flexible')}</span>
+        </div>
+        <div class="amenities">${(room.amenities || []).map(item => `<span>${escapeHTML(item)}</span>`).join('')}</div>
+      </div>
+    </article>
+  `;
+}
+
+function renderRooms() {
   const grid = qs('.rooms-grid');
   if (!grid) return;
-  grid.innerHTML = '';
-  const currentUser = getCurrentUser();
-  const rooms = data.rooms || [];
-  rooms.forEach(room => {
-    const isOwn = currentUser && room.ownerId === currentUser.id;
-    const ownerText = room.ownerName ? (isOwn ? 'Your listing' : `Listed by ${room.ownerName}`) : 'Student listing';
-    const description = room.description ? `<p class="muted">${room.description}</p>` : '';
-    const card = document.createElement('div');
-    card.className = 'card room-card';
-    card.innerHTML = `
-      <img src="${room.image}" alt="Room image" class="room-img">
-      <div class="card-body">
-        <h3>${room.title}</h3>
-        <p class="muted">${room.location} • ${room.type}</p>
-        ${description}
-        <p class="price">$${room.price} / month</p>
-        <p class="muted small">${ownerText}</p>
-        <div class="card-actions">
-          <button class="btn" onclick="demoAction()">Contact</button>
-          <a class="btn btn-ghost" href="matches.html">See roommates</a>
-        </div>
-      </div>
-    `;
-    grid.appendChild(card);
-  });
+  const rooms = appData.rooms || [];
+
+  if (!rooms.length) {
+    grid.innerHTML = '<div class="placeholder-loading">No rooms have been posted yet.</div>';
+    return;
+  }
+
+  grid.innerHTML = rooms.map(roomCard).join('');
 }
 
-function renderProfileIfNeeded(data) {
-  const profileCard = qs('.profile-page .profile-card');
-  if (!profileCard) return;
+function renderFeaturedRooms() {
+  const grid = qs('.featured-rooms-grid');
+  if (!grid) return;
+  const rooms = (appData.rooms || []).slice(0, 3);
+  grid.innerHTML = rooms.length
+    ? rooms.map(roomCard).join('')
+    : '<div class="placeholder-loading">Featured rooms will appear here after users post listings.</div>';
+}
+
+function renderProfileIfNeeded() {
+  const container = qs('.profile-page .profile-card');
+  if (!container) return;
 
   const params = new URLSearchParams(window.location.search);
   const idParam = params.get('id');
-  const currentUser = getCurrentUser();
 
-  // If no ID param and no logged in user, redirect to login
   if (!idParam && !currentUser) {
     window.location.href = 'login.html';
     return;
   }
 
-  // If ID param but no logged in user, show public profile
-  const profile = idParam ? getProfileById(idParam) : (currentUser ? currentUser.profile : null);
+  const profile = idParam ? getProfileById(idParam) : currentProfile;
   if (!profile) {
-    profileCard.innerHTML = '<div class="placeholder-loading">Profile not found.</div>';
+    container.innerHTML = '<div class="placeholder-loading">Profile not found yet. If this is your profile, complete it after logging in.</div>';
     return;
   }
 
-  const isOwnProfile = currentUser && currentUser.profileId === profile.id;
-  if (isOwnProfile) {
-    renderOwnProfile(profileCard, profile, currentUser);
+  if (currentUser && profile.id === currentUser.uid && !idParam) {
+    renderOwnProfile(container, profile);
   } else {
-    renderPublicProfile(profileCard, profile);
+    renderPublicProfile(container, profile);
   }
 }
 
-function renderPublicProfile(profileCard, profile) {
-  profileCard.innerHTML = `
-    <img src="${profile.avatar}" alt="Profile" class="profile-photo">
+function renderPublicProfile(container, profile) {
+  container.innerHTML = `
+    <img src="${escapeHTML(profile.avatar || DEMO_AVATAR)}" alt="${escapeHTML(profile.name)}" class="profile-photo">
     <div class="profile-body">
-      <h2>${profile.name}</h2>
-      <p class="muted">${profile.city}</p>
-      <p class="bio">${profile.bio}</p>
+      <h2>${escapeHTML(profile.name || 'RoomieSync user')}</h2>
+      <p class="muted">${escapeHTML(profile.age ? `${profile.age} years` : 'Age not added')} • ${escapeHTML(profile.city || 'City not added')}</p>
+      <p class="muted">${escapeHTML(profile.occupation || 'Student / young professional')}</p>
+      <p class="bio">${escapeHTML(profile.bio || 'No bio added yet.')}</p>
+      <div class="tags">${(profile.tags || []).map(tag => `<span class="tag">${escapeHTML(tag)}</span>`).join('')}</div>
       <h4>Preferences</h4>
-      <div class="tags">${(profile.tags || []).map(t => `<span class="tag">${t}</span>`).join('')}</div>
-      <h4>Hobbies</h4>
-      <p class="muted">Cooking, reading, board games</p>
+      <div class="profile-details">
+        <span>Budget: ${money(profile.preferences?.budget || 0)}</span>
+        <span>Food: ${escapeHTML(profile.preferences?.food || 'Any')}</span>
+        <span>Sleep: ${escapeHTML(profile.preferences?.sleep || 'Flexible')}</span>
+        <span>Smoking: ${escapeHTML(profile.preferences?.smoking || 'Not added')}</span>
+        <span>Pets: ${escapeHTML(profile.preferences?.pets || 'Not added')}</span>
+      </div>
+      <h4>Looking For</h4>
+      <p class="muted">${escapeHTML(profile.lookingFor || 'A responsible and compatible roommate.')}</p>
     </div>
   `;
 }
 
-function renderOwnProfile(profileCard, profile, user) {
-  const rooms = (appData.rooms || []).filter(room => room.ownerId === user.id);
-  profileCard.innerHTML = `
+function renderOwnProfile(container, profile) {
+  const ownRooms = appData.rooms.filter(room => room.ownerId === currentUser.uid);
+
+  container.innerHTML = `
     <div class="profile-edit">
       <div class="profile-preview">
-        <img src="${profile.avatar}" alt="Profile" class="profile-photo" id="profilePhotoPreview">
-        <div class="form-group">
-          <label>Avatar</label>
-          <input type="file" id="avatarInput" accept="image/*">
-        </div>
+        <img src="${escapeHTML(profile.avatar || DEMO_AVATAR)}" alt="Profile photo" class="profile-photo" id="profilePhotoPreview">
+        <label class="upload-label">Profile photo</label>
+        <input type="file" id="avatarInput" accept="image/*">
       </div>
-      <div class="profile-form">
+      <form class="profile-form" id="profileForm">
         <div class="form-group">
           <label>Name</label>
-          <input type="text" id="profileName" value="${profile.name}">
+          <input id="profileName" value="${escapeHTML(profile.name || '')}" required>
         </div>
         <div class="form-group">
           <label>City</label>
-          <input type="text" id="profileCity" value="${profile.city}">
+          <input id="profileCity" value="${escapeHTML(profile.city || '')}" required>
         </div>
         <div class="form-group">
           <label>Bio</label>
-          <textarea id="profileBio" rows="4">${profile.bio}</textarea>
+          <textarea id="profileBio" rows="4" required>${escapeHTML(profile.bio || '')}</textarea>
         </div>
         <div class="form-group">
-          <label>Tags (comma separated)</label>
-          <input type="text" id="profileTags" value="${(profile.tags || []).join(', ')}">
+          <label>Lifestyle tags (comma separated)</label>
+          <input id="profileTags" value="${escapeHTML((profile.tags || []).join(', '))}">
         </div>
-        <button class="btn btn-primary" id="saveProfileBtn">Save profile</button>
-        <div id="profileSaveMessage" class="form-error" style="display:none"></div>
-      </div>
-    </div>
-    <div class="profile-room-list">
-      <h3>Your listings</h3>
-      <div class="rooms-grid">${rooms.length ? rooms.map(room => `
-        <div class="card room-card">
-          <img src="${room.image}" alt="Room image" class="room-img">
-          <div class="card-body">
-            <h4>${room.title}</h4>
-            <p class="muted">${room.location}</p>
-            <p class="price">$${room.price} / month</p>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Budget</label>
+            <input type="number" id="profileBudget" value="${escapeHTML(profile.preferences?.budget || 15000)}">
+          </div>
+          <div class="form-group">
+            <label>Food</label>
+            <select id="profileFood">
+              <option value="any">Any</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="non-vegetarian">Non-vegetarian</option>
+              <option value="vegan">Vegan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Sleep</label>
+            <select id="profileSleep">
+              <option value="flexible">Flexible</option>
+              <option value="early">Early sleeper</option>
+              <option value="night">Night owl</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Smoking</label>
+            <select id="profileSmoking">
+              <option value="no">Non-smoker</option>
+              <option value="yes">Smoker</option>
+              <option value="occasionally">Occasionally</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Pets</label>
+            <select id="profilePets">
+              <option value="no">No pets</option>
+              <option value="yes">Pet friendly</option>
+              <option value="maybe">Open to pets</option>
+            </select>
           </div>
         </div>
-      `).join('') : '<p class="muted">You have not posted any rooms yet.</p>'}</div>
+        <div class="form-group">
+          <label>Roommate preferences</label>
+          <textarea id="profileLookingFor" rows="3">${escapeHTML(profile.lookingFor || '')}</textarea>
+        </div>
+        <div id="profileSaveMessage" class="form-error"></div>
+        <button class="btn btn-primary" type="submit" id="saveProfileBtn">Save Profile</button>
+      </form>
+      <div class="profile-room-list">
+        <h3>Your listings</h3>
+        <div class="rooms-grid">${ownRooms.length ? ownRooms.map(roomCard).join('') : '<p class="muted">You have not posted any rooms yet.</p>'}</div>
+      </div>
     </div>
   `;
 
-  const avatarInput = document.getElementById('avatarInput');
-  const photoPreview = document.getElementById('profilePhotoPreview');
-  const saveBtn = document.getElementById('saveProfileBtn');
-  const saveMessage = document.getElementById('profileSaveMessage');
+  const prefs = profile.preferences || {};
+  ['profileFood', 'profileSleep', 'profileSmoking', 'profilePets'].forEach(id => {
+    const field = document.getElementById(id);
+    const key = id.replace('profile', '').toLowerCase();
+    if (field && prefs[key]) field.value = prefs[key];
+  });
 
-  if (avatarInput) {
-    avatarInput.addEventListener('change', async (event) => {
-      const file = event.target.files[0];
-      if (!file) return;
-      const dataUrl = await fileToDataURL(file);
-      photoPreview.src = dataUrl;
-      photoPreview.dataset.newAvatar = dataUrl;
-    });
-  }
-
-  if (saveBtn) {
-    saveBtn.addEventListener('click', () => {
-      try {
-        const nameInput = document.getElementById('profileName').value.trim();
-        const cityInput = document.getElementById('profileCity').value.trim();
-        const bioInput = document.getElementById('profileBio').value.trim();
-        const tagsInput = document.getElementById('profileTags').value.trim();
-        const newAvatar = photoPreview.dataset.newAvatar || profile.avatar;
-
-        if (!nameInput || !cityInput || !bioInput) {
-          showError(saveMessage, 'Please fill all profile fields.');
-          return;
-        }
-
-        if (nameInput.length < 2) {
-          showError(saveMessage, 'Name must be at least 2 characters.');
-          return;
-        }
-
-        const updatedProfile = {
-          ...profile,
-          name: nameInput,
-          city: cityInput,
-          bio: bioInput,
-          tags: tagsInput ? tagsInput.split(',').map(tag => tag.trim()).filter(Boolean) : [],
-          avatar: newAvatar
-        };
-
-        const storedProfiles = readPersisted(STORAGE_KEYS.profiles);
-        const existingIndex = storedProfiles.findIndex(item => item.id === profile.id);
-        if (existingIndex >= 0) {
-          storedProfiles[existingIndex] = updatedProfile;
-        } else {
-          storedProfiles.push(updatedProfile);
-        }
-        writePersisted(STORAGE_KEYS.profiles, storedProfiles);
-        appData.profiles = appData.profiles.filter(item => item.id !== profile.id).concat(updatedProfile);
-        
-        saveMessage.textContent = 'Profile saved successfully!';
-        saveMessage.style.color = '#059669';
-        saveMessage.style.backgroundColor = '#ECFDF5';
-        saveMessage.classList.add('show');
-        saveMessage.style.display = 'block';
-      } catch (err) {
-        showError(saveMessage, 'An error occurred while saving. Please try again.');
-        console.error('Profile save error:', err);
-      }
-    });
-  }
+  initProfileForm(profile);
 }
 
-function initPostRoomPage(data) {
-  const roomForm = document.getElementById('roomPostForm');
-  if (!roomForm) return;
+function initProfileForm(profile) {
+  const form = qs('#profileForm');
+  const avatarInput = qs('#avatarInput');
+  const preview = qs('#profilePhotoPreview');
+  const message = qs('#profileSaveMessage');
+  if (!form) return;
 
-  const currentUser = getCurrentUser();
-  if (!currentUser) {
-    // Redirect to login if not logged in
-    setTimeout(() => {
-      window.location.href = 'login.html';
-    }, 100);
+  avatarInput?.addEventListener('change', () => {
+    const file = avatarInput.files[0];
+    if (file) preview.src = URL.createObjectURL(file);
+  });
+
+  form.addEventListener('submit', async event => {
+    event.preventDefault();
+    if (!requireLogin()) return;
+
+    const saveBtn = qs('#saveProfileBtn');
+    hideError(message);
+    setButtonLoading(saveBtn, 'Saving...');
+
+    try {
+      const avatarFile = avatarInput?.files[0];
+      const avatarUrl = avatarFile ? await uploadImage(avatarFile, `profiles/${currentUser.uid}`) : profile.avatar;
+      const updatedProfile = {
+        name: qs('#profileName').value.trim(),
+        city: qs('#profileCity').value.trim(),
+        bio: qs('#profileBio').value.trim(),
+        tags: tagsFromText(qs('#profileTags').value),
+        avatar: avatarUrl || DEMO_AVATAR,
+        preferences: {
+          budget: Number(qs('#profileBudget').value || 0),
+          food: qs('#profileFood').value,
+          sleep: qs('#profileSleep').value,
+          smoking: qs('#profileSmoking').value,
+          pets: qs('#profilePets').value
+        },
+        lookingFor: qs('#profileLookingFor').value.trim(),
+        email: currentUser.email,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+
+      await db.collection('profiles').doc(currentUser.uid).set(updatedProfile, { merge: true });
+      currentProfile = { id: currentUser.uid, ...updatedProfile };
+      await loadSharedData();
+      showSuccess(message, 'Profile saved successfully.');
+    } catch (error) {
+      showError(message, error.message || 'Could not save profile.');
+    } finally {
+      resetButton(saveBtn);
+    }
+  });
+}
+
+async function handleLogin(event) {
+  event.preventDefault();
+  const email = qs('#loginEmail').value.trim();
+  const password = qs('#loginPassword').value;
+  const error = qs('#errorMessage');
+  const button = qs('#loginBtn');
+
+  if (!hasFirebase()) {
+    showError(error, 'Add your Firebase config before login will work.');
     return;
   }
 
-  const imageInput = document.getElementById('roomImage');
-  const preview = document.getElementById('roomImagePreview');
-  if (imageInput) {
-    imageInput.addEventListener('change', async (event) => {
-      const file = event.target.files[0];
-      if (!file) {
-        preview.style.display = 'none';
-        return;
-      }
-      const dataUrl = await fileToDataURL(file);
-      preview.src = dataUrl;
-      preview.style.display = 'block';
-    });
+  hideError(error);
+  setButtonLoading(button, 'Logging in...');
+
+  try {
+    await auth.signInWithEmailAndPassword(email, password);
+    window.location.href = 'index.html';
+  } catch (err) {
+    showError(error, 'Login failed. Check your email and password.');
+    resetButton(button);
+  }
+}
+
+async function handleRegister(event) {
+  event.preventDefault();
+  const error = qs('#registerError');
+  const button = qs('#registerBtn');
+
+  if (!hasFirebase()) {
+    showError(error, 'Add your Firebase config before registration will work.');
+    return;
   }
 
-  roomForm.addEventListener('submit', async (event) => {
+  const name = qs('#registerName').value.trim();
+  const email = qs('#registerEmail').value.trim();
+  const password = qs('#registerPassword').value;
+  const city = qs('#registerCity').value.trim();
+
+  if (!name || !email || !password || !city) {
+    showError(error, 'Please fill all required fields.');
+    return;
+  }
+
+  if (password.length < 6) {
+    showError(error, 'Password must be at least 6 characters.');
+    return;
+  }
+
+  hideError(error);
+  setButtonLoading(button, 'Creating account...');
+
+  try {
+    const result = await auth.createUserWithEmailAndPassword(email, password);
+    const user = result.user;
+    const avatarFile = qs('#registerAvatar')?.files[0];
+    const avatarUrl = avatarFile ? await uploadImage(avatarFile, `profiles/${user.uid}`) : DEMO_AVATAR;
+    const checkedTags = qsa('input[name="registerTag"]:checked').map(item => item.value);
+
+    const profile = {
+      name,
+      email,
+      city,
+      bio: qs('#registerBio').value.trim() || 'A friendly roommate looking for a good shared home.',
+      avatar: avatarUrl,
+      tags: checkedTags.length ? checkedTags : ['Student', 'Roommate'],
+      preferences: {
+        budget: Number(qs('#registerBudget')?.value || 15000),
+        food: qs('#registerFoodPref')?.value || 'any',
+        smoking: qs('#registerSmoking')?.value || 'no',
+        drinking: qs('#registerDrinking')?.value || 'no',
+        pets: qs('#registerPets')?.value || 'no',
+        sleep: qs('#registerSleep')?.value || 'flexible',
+        cleanliness: Number(qs('#registerCleanliness')?.value || 3),
+        occupation: qs('#registerOccupation')?.value.trim() || '',
+        moveIn: qs('#registerMoveIn')?.value || '',
+        environment: qs('#registerEnvironment')?.value || 'mixed',
+        languages: tagsFromText(qs('#registerLanguages')?.value || '')
+      },
+      lookingFor: [
+        `Gender: ${qs('#registerLookingGender')?.value || 'any'}`,
+        `Status: ${qs('#registerLookingStatus')?.value || 'either'}`,
+        `Smoking: ${qs('#registerLookingSmoking')?.value || 'any'}`,
+        `Environment: ${qs('#registerLookingEnvironment')?.value || 'any'}`
+      ].join(', '),
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    };
+
+    await db.collection('profiles').doc(user.uid).set(profile);
+    window.location.href = 'profile.html';
+  } catch (err) {
+    showError(error, err.message || 'Registration failed. Please try again.');
+    resetButton(button);
+  }
+}
+
+async function handleLogout(event) {
+  event?.preventDefault();
+  if (hasFirebase()) await auth.signOut();
+  window.location.href = 'login.html';
+}
+
+function initAuthForms() {
+  qs('#loginForm')?.addEventListener('submit', handleLogin);
+  qs('#registerForm')?.addEventListener('submit', handleRegister);
+
+  const budget = qs('#registerBudget');
+  const display = qs('#budgetValue');
+  if (budget && display) {
+    const update = () => { display.textContent = money(budget.value); };
+    budget.addEventListener('input', update);
+    update();
+  }
+}
+
+function initPostRoomPage() {
+  const form = qs('#roomPostForm');
+  if (!form) return;
+
+  if (!currentUser) {
+    qs('.room-form-card')?.insertAdjacentHTML('beforeend', '<p class="muted">Please log in to post a public room listing.</p>');
+    return;
+  }
+
+  const imageInput = qs('#roomImage');
+  const preview = qs('#roomImagePreview');
+
+  imageInput?.addEventListener('change', () => {
+    const file = imageInput.files[0];
+    if (!file) {
+      preview.style.display = 'none';
+      return;
+    }
+    preview.src = URL.createObjectURL(file);
+    preview.style.display = 'block';
+  });
+
+  form.addEventListener('submit', async event => {
     event.preventDefault();
-    const title = document.getElementById('roomTitle').value.trim();
-    const location = document.getElementById('roomLocation').value.trim();
-    const type = document.getElementById('roomType').value;
-    const price = Number(document.getElementById('roomPrice').value);
-    const description = document.getElementById('roomDescription').value.trim();
-    const imageFile = document.getElementById('roomImage').files[0];
-    const errorMsg = document.getElementById('roomError');
-    const submitBtn = document.getElementById('postRoomBtn');
+    if (!requireLogin()) return;
 
-    if (!title || !location || !type || !price) {
-      showError(errorMsg, 'Please complete all required fields.');
-      return;
-    }
-
-    if (title.length < 5) {
-      showError(errorMsg, 'Title must be at least 5 characters.');
-      return;
-    }
-
-    if (price < 100 || price > 5000) {
-      showError(errorMsg, 'Price must be between $100 and $5000.');
-      return;
-    }
-
-    if (description.length < 10) {
-      showError(errorMsg, 'Description must be at least 10 characters.');
-      return;
-    }
-
-    hideError(errorMsg);
-    setButtonLoading(submitBtn, 'Posting room...');
+    const error = qs('#roomError');
+    const button = qs('#postRoomBtn');
+    hideError(error);
+    setButtonLoading(button, 'Uploading...');
 
     try {
-      const imageData = imageFile ? await fileToDataURL(imageFile) : 'images/room-1.svg';
+      const imageFile = imageInput.files[0];
+      const imageUrl = imageFile ? await uploadImage(imageFile, `rooms/${currentUser.uid}`) : DEMO_IMAGE;
 
-      const storedRooms = readPersisted(STORAGE_KEYS.rooms);
-      const newRoom = {
-        id: getNextId([...appData.rooms, ...storedRooms]),
-        title,
-        location,
-        type,
-        price,
-        description,
-        image: imageData,
-        ownerId: currentUser.id,
-        ownerName: currentUser.profile.name
+      // Firestore room document. This public collection is what makes User A's
+      // listing visible to User B after deployment.
+      const room = {
+        title: qs('#roomTitle').value.trim(),
+        location: qs('#roomLocation').value.trim(),
+        type: qs('#roomType').value,
+        price: Number(qs('#roomPrice').value || 0),
+        description: qs('#roomDescription').value.trim(),
+        image: imageUrl,
+        ownerId: currentUser.uid,
+        ownerName: currentProfile?.name || currentUser.email,
+        roommatePreference: qs('#roommatePreference').value.trim() || 'Any responsible roommate',
+        moveInDate: qs('#moveInDate').value || 'Flexible',
+        createdAt: firebase.firestore.FieldValue.serverTimestamp()
       };
 
-      writePersisted(STORAGE_KEYS.rooms, [...storedRooms, newRoom]);
-      showError(errorMsg, 'Room posted successfully! Redirecting...');
-      errorMsg.style.color = '#059669';
-      errorMsg.style.backgroundColor = '#ECFDF5';
-      setTimeout(() => {
-        window.location.href = 'rooms.html';
-      }, 800);
-    } catch (err) {
-      showError(errorMsg, 'An error occurred. Please try again.');
-      resetButton(submitBtn, 'Post room');
-      console.error('Room posting error:', err);
-    }
-  });
-}
-
-function fileToDataURL(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
-}
-
-function updateNavbarLoginState() {
-  const isLoggedIn = getLoggedInState();
-  const nav = document.querySelector('.nav');
-  if (!nav) return;
-
-  const existingLoginLink = nav.querySelector('a[href="login.html"]');
-  const existingLogoutBtn = nav.querySelector('.logout-btn');
-
-  function createNavLink(href, text, classes = '') {
-    const link = document.createElement('a');
-    link.href = href;
-    link.textContent = text;
-    if (classes) link.className = classes;
-    return link;
-  }
-
-  if (isLoggedIn) {
-    if (existingLoginLink) {
-      const logout = createNavLink('#', 'Logout', 'btn btn-outline logout-btn');
-      logout.addEventListener('click', (event) => {
-        event.preventDefault();
-        logoutUser();
-        window.location.href = 'login.html';
-      });
-      existingLoginLink.replaceWith(logout);
-    }
-
-    if (!nav.querySelector('a[href="profile.html"]')) {
-      const profileLink = createNavLink('profile.html', 'Profile');
-      const roomLink = createNavLink('post-room.html', 'Post Room');
-      const loginOrLogout = nav.querySelector('.logout-btn');
-      if (loginOrLogout) {
-        nav.insertBefore(roomLink, loginOrLogout);
-        nav.insertBefore(profileLink, roomLink);
-      } else {
-        nav.appendChild(profileLink);
-        nav.appendChild(roomLink);
+      if (!room.title || !room.location || !room.price || !room.description) {
+        throw new Error('Please complete all room fields.');
       }
+
+      await db.collection('rooms').add(room);
+      showSuccess(error, 'Room posted successfully. Redirecting...');
+      setTimeout(() => { window.location.href = 'rooms.html'; }, 700);
+    } catch (err) {
+      showError(error, err.message || 'Could not post room.');
+      resetButton(button);
     }
-  } else {
-    if (existingLogoutBtn) {
-      const loginLink = createNavLink('login.html', 'Login', 'btn btn-outline');
-      existingLogoutBtn.replaceWith(loginLink);
-    }
-    const profileLink = nav.querySelector('a[href="profile.html"]');
-    const roomLink = nav.querySelector('a[href="post-room.html"]');
-    if (profileLink) profileLink.remove();
-    if (roomLink) roomLink.remove();
-  }
+  });
+}
+
+function initGetStarted() {
+  qs('#getStartedBtn')?.addEventListener('click', event => {
+    event.preventDefault();
+    window.location.href = currentUser ? 'matches.html' : 'login.html';
+  });
+}
+
+function initNavToggles() {
+  const navToggle = qs('#navToggle');
+  const nav = qs('.nav');
+  if (!navToggle || !nav) return;
+
+  navToggle.addEventListener('click', () => nav.classList.toggle('open'));
+  nav.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => nav.classList.remove('open'));
+  });
 }
 
 function initChatPage() {
-  const chatForm = document.getElementById('chatForm');
-  const chatList = document.getElementById('chatList');
-  const chatInput = document.getElementById('chatInput');
-  const chatNotice = document.getElementById('chatNotice');
-  if (!chatForm || !chatList || !chatInput || !chatNotice) return;
+  const notice = qs('#chatNotice');
+  const input = qs('#chatInput');
+  const button = qs('#chatForm button');
+  if (!notice || !input || !button) return;
 
-  const isLoggedIn = getLoggedInState();
-  if (!isLoggedIn) {
-    chatNotice.textContent = 'Log in to join chat and message roommates.';
-    chatInput.disabled = true;
-    chatForm.querySelector('button').disabled = true;
+  if (!currentUser) {
+    notice.textContent = 'Log in to join chat and message roommates.';
+    input.disabled = true;
+    button.disabled = true;
+  } else {
+    notice.textContent = 'Chat is a demo page. Public profiles and listings now use Firebase.';
+  }
+}
+
+function bootWithAuth() {
+  if (!hasFirebase()) {
+    updateNavbarLoginState();
+    loadSharedData();
+    initPostRoomPage();
+    initChatPage();
     return;
   }
 
-  chatNotice.textContent = 'Chat with roommates in a shared community feel.';
-  const chatHistory = loadChatHistory();
-  renderChatMessages(chatHistory, chatList);
+  auth.onAuthStateChanged(async user => {
+    currentUser = user;
+    currentProfile = await loadCurrentProfile(user);
+    updateNavbarLoginState();
+    await loadSharedData();
+    initPostRoomPage();
+    initChatPage();
 
-  chatForm.addEventListener('submit', function(event) {
-    event.preventDefault();
-    const message = chatInput.value.trim();
-    if (!message) return;
-
-    const userEmail = localStorage.getItem('roomieSyncEmail') || 'You';
-    const newMessage = {
-      sender: userEmail,
-      text: message,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-    };
-    chatHistory.push(newMessage);
-    writePersisted(STORAGE_KEYS.chat, chatHistory);
-    renderChatMessages(chatHistory, chatList);
-    chatInput.value = '';
-    chatInput.focus();
+    if (window.location.pathname.endsWith('login.html') && currentUser) {
+      window.location.href = 'index.html';
+    }
   });
 }
 
-function loadChatHistory() {
-  const stored = localStorage.getItem(STORAGE_KEYS.chat);
-  if (stored) {
-    try { return JSON.parse(stored); } catch (e) { return []; }
-  }
-  const defaultMessages = [
-    { sender: 'Aisha', text: 'Anyone looking for a quiet roommate near campus?', time: '09:10 AM' },
-    { sender: 'Marcus', text: 'I prefer studying late, so I need someone okay with quieter mornings.', time: '09:14 AM' }
-  ];
-  writePersisted(STORAGE_KEYS.chat, defaultMessages);
-  return defaultMessages;
-}
-
-function renderChatMessages(messages, container) {
-  container.innerHTML = messages.map(msg => `
-      <div class="chat-message">
-        <div class="chat-message-head">
-          <span class="chat-sender">${msg.sender}</span>
-          <span class="chat-time">${msg.time}</span>
-        </div>
-        <p class="chat-text">${msg.text}</p>
-      </div>
-    `).join('');
-}
-
-function initPage() {
+document.addEventListener('DOMContentLoaded', () => {
   initAuthForms();
   initGetStarted();
   initNavToggles();
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  initPage();
-  if (window.location.pathname.endsWith('login.html') && getLoggedInState()) {
-    window.location.href = 'index.html';
-    return;
-  }
-  loadData();
+  bootWithAuth();
 });
-
-

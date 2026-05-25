@@ -3,11 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>RoomieSync — Find Your Perfect Roommate</title>
+  <title>RoomieSync - Find Your Perfect Roommate</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- Animated background elements -->
+  <div class="glow-blob-1"></div>
+  <div class="glow-blob-2"></div>
+  
   <header class="site-header">
     <div class="container nav-row">
       <a class="logo" href="index.html">RoomieSync</a>
@@ -26,10 +30,10 @@
       <div class="container hero-grid">
         <div class="hero-left">
           <h1>Find Your Perfect Roommate</h1>
-          <p class="lead">Match with roommates based on lifestyle, budget, and habits.</p>
+          <p class="lead">Match with roommates based on lifestyle, budget, and habits. Connect with students who share your vibe.</p>
           <div class="hero-actions">
             <a class="btn btn-primary" id="getStartedBtn" href="#">Get Started</a>
-            <a class="btn btn-ghost" href="matches.html">Explore Matches</a>
+            <a class="btn btn-ghost" href="rooms.html">Find Rooms</a>
           </div>
         </div>
         <div class="hero-right">
@@ -43,27 +47,40 @@
       <h2>How RoomieSync Works</h2>
       <div class="grid features-grid">
         <div class="feature">
-          <h4>Build a Profile</h4>
-          <p>Tell others about your habits, schedule, and preferences.</p>
+          <h4>Build Your Profile</h4>
+          <p>Tell others about your habits, schedule, and preferences. Be authentic and help others find the right fit.</p>
         </div>
         <div class="feature">
           <h4>Browse Matches</h4>
-          <p>See compatibility tags and match percentage at a glance.</p>
+          <p>See compatibility scores and match recommendations. Discover roommates aligned with your lifestyle.</p>
         </div>
         <div class="feature">
-          <h4>Contact Easily</h4>
-          <p>Send a quick message to start a conversation.</p>
+          <h4>Connect Easily</h4>
+          <p>Send messages and start conversations. Build relationships before moving in together.</p>
         </div>
       </div>
+    </section>
+
+    <section class="container featured-rooms">
+      <div class="section-header">
+        <h2>Featured Rooms</h2>
+        <p class="muted">Fresh public listings uploaded by RoomieSync users.</p>
+      </div>
+      <div class="featured-rooms-grid rooms-grid"></div>
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container">
-      <p>&copy; 2026 RoomieSync — A student project.</p>
+      <p>&copy; 2026 RoomieSync - A modern student project.</p>
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+  <script src="firebase-config.js"></script>
   <script src="js/script.js"></script>
 </body>
 </html>

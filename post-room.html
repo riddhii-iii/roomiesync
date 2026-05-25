@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Post Room — RoomieSync</title>
+  <title>Post Room - RoomieSync</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -33,7 +33,7 @@
         </div>
         <div class="form-group">
           <label>Location</label>
-          <input type="text" id="roomLocation" placeholder="Example: Boston, MA" required>
+          <input type="text" id="roomLocation" placeholder="Example: Pune, MH" required>
         </div>
         <div class="form-group">
           <label>Room Type</label>
@@ -45,11 +45,19 @@
         </div>
         <div class="form-group">
           <label>Price per month</label>
-          <input type="number" id="roomPrice" placeholder="450" required>
+          <input type="number" id="roomPrice" placeholder="15000" required>
         </div>
         <div class="form-group">
           <label>Description</label>
           <textarea id="roomDescription" rows="4" placeholder="Add a short description of the room, utilities, and commute." required></textarea>
+        </div>
+        <div class="form-group">
+          <label>Roommate Preference</label>
+          <input type="text" id="roommatePreference" placeholder="Example: non-smoker, student, tidy roommate">
+        </div>
+        <div class="form-group">
+          <label>Move-in Date</label>
+          <input type="date" id="moveInDate">
         </div>
         <div class="form-group">
           <label>Room image</label>
@@ -70,6 +78,11 @@
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+  <script src="firebase-config.js"></script>
   <script src="js/script.js"></script>
 </body>
 </html>

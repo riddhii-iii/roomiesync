@@ -3,11 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Rooms — RoomieSync</title>
+  <title>Rooms - RoomieSync</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- Animated background elements -->
+  <div class="glow-blob-1"></div>
+  <div class="glow-blob-2"></div>
+  
   <header class="site-header">
     <div class="container nav-row">
       <a class="logo" href="index.html">RoomieSync</a>
@@ -25,20 +29,26 @@
   <main class="container">
     <section class="section-header">
       <h1>Available Rooms</h1>
-      <p class="muted">Browse rooms posted by students and small landlords.</p>
+      <p class="muted">Browse public room listings posted by real RoomieSync users.</p>
+      <a class="btn btn-primary" href="post-room.html">Post a Room</a>
     </section>
 
     <section class="rooms-grid">
-      <!-- rooms will be rendered here from data.json -->
+      <!-- Public room listings are loaded from Firestore and rendered here. -->
     </section>
   </main>
 
   <footer class="site-footer">
     <div class="container">
-      <p>&copy; 2026 RoomieSync</p>
+      <p>&copy; 2026 RoomieSync - A modern student project.</p>
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+  <script src="firebase-config.js"></script>
   <script src="js/script.js"></script>
 </body>
 </html>

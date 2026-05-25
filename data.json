@@ -1,92 +1,364 @@
 {
   "profiles": [
     {
-      "id": 1,
-      "name": "Aisha Khan",
-      "city": "Austin, TX",
-      "bio": "CS major, morning person who loves studying at coffee shops. Early sleeper looking for a quiet roommate.",
-      "tags": ["Non-Smoker", "Student", "Vegetarian"],
-      "compatibility": 78,
-      "avatar": "images/avatar-1.svg"
+      "id": "demo-profile-1",
+      "name": "Ananya Sharma",
+      "age": 20,
+      "city": "Pune, MH",
+      "occupation": "Computer Science student",
+      "bio": "Computer Science student who prefers clean and quiet spaces. Usually studies in the evening and enjoys weekend cafe hopping.",
+      "tags": ["Early Sleeper", "Vegetarian", "Non-Smoker", "Clean Freak"],
+      "compatibility": 91,
+      "avatar": "images/demo/profile-1.jpg",
+      "preferences": {
+        "budget": 16000,
+        "food": "vegetarian",
+        "sleep": "early",
+        "smoking": "no",
+        "pets": "maybe"
+      },
+      "lookingFor": "Female roommate preferred, quiet environment, tidy shared kitchen, okay with occasional friends visiting."
     },
     {
-      "id": 2,
-      "name": "Marcus Li",
-      "city": "San Diego, CA",
-      "bio": "Art & design student. Night owl, into gaming, movies, and cooking. Super chill and easy-going.",
-      "tags": ["Non-Smoker", "Night Owl", "Student", "Gamer"],
-      "compatibility": 65,
-      "avatar": "images/avatar-2.svg"
+      "id": "demo-profile-2",
+      "name": "Rohan Mehta",
+      "age": 22,
+      "city": "Mumbai, MH",
+      "occupation": "Marketing intern",
+      "bio": "Marketing intern in Andheri who likes a social but respectful flat vibe. Loves football, music, and cooking simple meals.",
+      "tags": ["Extrovert", "Non-Smoker", "Pet Friendly", "Gym Lover"],
+      "compatibility": 84,
+      "avatar": "images/demo/profile-2.jpg",
+      "preferences": {
+        "budget": 22000,
+        "food": "any",
+        "sleep": "flexible",
+        "smoking": "no",
+        "pets": "yes"
+      },
+      "lookingFor": "Chill flatmates who communicate clearly, keep common areas usable, and split chores fairly."
     },
     {
-      "id": 3,
-      "name": "Emma Rossi",
-      "city": "Boston, MA",
-      "bio": "Biology major, pre-med track. Quiet studious vibe, into hiking and yoga on weekends.",
-      "tags": ["Non-Smoker", "Student", "Early Bird", "Athlete"],
-      "compatibility": 82,
-      "avatar": "images/avatar-3.svg"
-    },
-    {
-      "id": 4,
-      "name": "Jordan Park",
-      "city": "Portland, OR",
-      "bio": "Engineering student, loves cooking international food. Looking for roommates who enjoy community dinners.",
-      "tags": ["Non-Smoker", "Foodie", "Student", "Social"],
+      "id": "demo-profile-3",
+      "name": "Isha Nair",
+      "age": 21,
+      "city": "Bangalore, KA",
+      "occupation": "UX design student",
+      "bio": "Design student who enjoys music, sketching, and collaborative environments. Looking for a friendly home near metro access.",
+      "tags": ["Night Owl", "Vegetarian", "Extrovert", "Pet Friendly"],
       "compatibility": 88,
-      "avatar": "images/avatar-1.svg"
+      "avatar": "images/demo/profile-3.jpg",
+      "preferences": {
+        "budget": 18000,
+        "food": "vegetarian",
+        "sleep": "night",
+        "smoking": "no",
+        "pets": "yes"
+      },
+      "lookingFor": "Creative and respectful roommate, preferably okay with late-night project work during submissions."
     },
     {
-      "id": 5,
-      "name": "Sam Chen",
-      "city": "Seattle, WA",
-      "bio": "Business major, gym enthusiast, and coffee addict. Likes a clean shared space and responsible roommates.",
-      "tags": ["Non-Smoker", "Student", "Fitness", "Organized"],
-      "compatibility": 75,
-      "avatar": "images/avatar-2.svg"
+      "id": "demo-profile-4",
+      "name": "Kabir Sood",
+      "age": 23,
+      "city": "Hyderabad, TS",
+      "occupation": "Software trainee",
+      "bio": "Software trainee working hybrid near Hitech City. Calm, organized, and usually at the gym after work.",
+      "tags": ["Gym Lover", "Non-Smoker", "Introvert", "Clean Freak"],
+      "compatibility": 86,
+      "avatar": "images/demo/profile-4.jpg",
+      "preferences": {
+        "budget": 20000,
+        "food": "any",
+        "sleep": "early",
+        "smoking": "no",
+        "pets": "no"
+      },
+      "lookingFor": "Working professional or final-year student, non-smoker, prefers a quiet weekday routine."
+    },
+    {
+      "id": "demo-profile-5",
+      "name": "Meera Joshi",
+      "age": 19,
+      "city": "Delhi, DL",
+      "occupation": "Economics student",
+      "bio": "Economics student who likes tidy rooms, early classes, and homemade food. Friendly but values personal space.",
+      "tags": ["Early Sleeper", "Vegetarian", "Introvert", "Clean Freak"],
+      "compatibility": 78,
+      "avatar": "images/demo/profile-5.jpg",
+      "preferences": {
+        "budget": 14000,
+        "food": "vegetarian",
+        "sleep": "early",
+        "smoking": "no",
+        "pets": "maybe"
+      },
+      "lookingFor": "Female student roommate preferred, vegetarian kitchen preferred, quiet study-friendly flat."
+    },
+    {
+      "id": "demo-profile-6",
+      "name": "Arjun Rao",
+      "age": 24,
+      "city": "Bangalore, KA",
+      "occupation": "Data analyst",
+      "bio": "Data analyst and gamer looking for a balanced flat. Works from office most days and keeps weekends relaxed.",
+      "tags": ["Gamer", "Night Owl", "Non-Smoker", "Introvert"],
+      "compatibility": 82,
+      "avatar": "images/demo/profile-6.jpg",
+      "preferences": {
+        "budget": 24000,
+        "food": "non-vegetarian",
+        "sleep": "night",
+        "smoking": "no",
+        "pets": "no"
+      },
+      "lookingFor": "Flatmate okay with gaming on weekends, no smoking indoors, and shared WiFi bills."
+    },
+    {
+      "id": "demo-profile-7",
+      "name": "Sana Sheikh",
+      "age": 22,
+      "city": "Mumbai, MH",
+      "occupation": "Media studies student",
+      "bio": "Media studies student doing part-time shoots. Social, responsible, and happiest in bright spaces with good ventilation.",
+      "tags": ["Extrovert", "Night Owl", "Pet Friendly", "Non-Smoker"],
+      "compatibility": 89,
+      "avatar": "images/demo/profile-7.jpg",
+      "preferences": {
+        "budget": 21000,
+        "food": "any",
+        "sleep": "night",
+        "smoking": "no",
+        "pets": "yes"
+      },
+      "lookingFor": "Female or mixed flat is fine, friendly roommates, safe locality, and flexible guest rules."
+    },
+    {
+      "id": "demo-profile-8",
+      "name": "Dev Patel",
+      "age": 21,
+      "city": "Pune, MH",
+      "occupation": "Mechanical engineering student",
+      "bio": "Engineering student near Kothrud. Loves cricket, gym, and keeping a simple weekly routine.",
+      "tags": ["Gym Lover", "Non-Smoker", "Early Sleeper", "Gamer"],
+      "compatibility": 80,
+      "avatar": "images/demo/profile-8.jpg",
+      "preferences": {
+        "budget": 13000,
+        "food": "any",
+        "sleep": "early",
+        "smoking": "no",
+        "pets": "maybe"
+      },
+      "lookingFor": "Student flatmate preferred, budget-friendly rent, no loud parties during exam weeks."
+    },
+    {
+      "id": "demo-profile-9",
+      "name": "Priya Menon",
+      "age": 25,
+      "city": "Hyderabad, TS",
+      "occupation": "Product designer",
+      "bio": "Product designer working hybrid. Enjoys plants, podcasts, and peaceful evenings after work.",
+      "tags": ["Introvert", "Vegetarian", "Pet Friendly", "Clean Freak"],
+      "compatibility": 93,
+      "avatar": "images/demo/profile-9.jpg",
+      "preferences": {
+        "budget": 26000,
+        "food": "vegetarian",
+        "sleep": "flexible",
+        "smoking": "no",
+        "pets": "yes"
+      },
+      "lookingFor": "Working women preferred, clean common areas, balcony or natural light would be a bonus."
+    },
+    {
+      "id": "demo-profile-10",
+      "name": "Nikhil Verma",
+      "age": 23,
+      "city": "Delhi, DL",
+      "occupation": "CA article assistant",
+      "bio": "CA article assistant with long weekdays and quiet mornings. Reliable with rent, chores, and shared expenses.",
+      "tags": ["Early Sleeper", "Non-Smoker", "Introvert", "Clean Freak"],
+      "compatibility": 76,
+      "avatar": "images/demo/profile-10.jpg",
+      "preferences": {
+        "budget": 18000,
+        "food": "any",
+        "sleep": "early",
+        "smoking": "no",
+        "pets": "no"
+      },
+      "lookingFor": "Male roommate preferred, peaceful flat, good metro connectivity, clear house rules."
+    },
+    {
+      "id": "demo-profile-11",
+      "name": "Tara Banerjee",
+      "age": 20,
+      "city": "Bangalore, KA",
+      "occupation": "Architecture student",
+      "bio": "Architecture student who works on models late during submissions. Loves art, coffee, and tidy work corners.",
+      "tags": ["Night Owl", "Vegetarian", "Extrovert", "Clean Freak"],
+      "compatibility": 87,
+      "avatar": "images/demo/profile-11.jpg",
+      "preferences": {
+        "budget": 17000,
+        "food": "vegetarian",
+        "sleep": "night",
+        "smoking": "no",
+        "pets": "maybe"
+      },
+      "lookingFor": "Roommate who understands project deadlines, likes a creative home, and respects quiet hours."
+    },
+    {
+      "id": "demo-profile-12",
+      "name": "Aditya Kulkarni",
+      "age": 24,
+      "city": "Pune, MH",
+      "occupation": "Frontend developer",
+      "bio": "Frontend developer working from a co-working space. Easy-going, into trekking, gaming, and weekend meal prep.",
+      "tags": ["Gamer", "Pet Friendly", "Non-Smoker", "Extrovert"],
+      "compatibility": 85,
+      "avatar": "images/demo/profile-12.jpg",
+      "preferences": {
+        "budget": 23000,
+        "food": "any",
+        "sleep": "flexible",
+        "smoking": "no",
+        "pets": "yes"
+      },
+      "lookingFor": "Responsible flatmate, good WiFi, okay with occasional cooking experiments and trekking plans."
     }
   ],
   "rooms": [
     {
-      "id": 1,
-      "title": "Sunny Private Room in Downtown",
-      "location": "Seattle, WA",
+      "id": "demo-room-1",
+      "title": "Twin Sharing Room near FC Road",
+      "location": "Shivajinagar, Pune",
+      "type": "Shared Apartment",
+      "price": 14500,
+      "image": "images/demo/room-1.jpg",
+      "description": "Fully furnished 2BHK near college with great ventilation, study desks, and easy access to cafes and bus stops.",
+      "amenities": ["WiFi", "Balcony", "Washing Machine"],
+      "roommatePreference": "Female roommate preferred",
+      "moveInDate": "2026-06-10",
+      "ownerName": "Ananya Sharma"
+    },
+    {
+      "id": "demo-room-2",
+      "title": "Private Room in Andheri West Flat",
+      "location": "Andheri West, Mumbai",
       "type": "Private Room",
-      "price": 650,
-      "image": "images/room-1.svg",
-      "description": "Bright private bedroom with large windows and hardwood floors. Close to bus lines and downtown amenities. Utilities included. Furnished or unfurnished available."
+      "price": 28000,
+      "image": "images/demo/room-2.jpg",
+      "description": "Bright private room in a student-friendly apartment with metro nearby, shared kitchen, and reliable WiFi.",
+      "amenities": ["WiFi", "AC", "Attached Bathroom"],
+      "roommatePreference": "Any gender, non-smoker preferred",
+      "moveInDate": "2026-06-15",
+      "ownerName": "Rohan Mehta"
     },
     {
-      "id": 2,
-      "title": "Shared Room in Student District",
-      "location": "Madison, WI",
-      "type": "Shared Room",
-      "price": 420,
-      "image": "images/room-2.svg",
-      "description": "Affordable shared room in a safe, student-friendly neighborhood. 10-minute walk to campus. Building has laundry, parking, and study lounge. Utilities split equally."
+      "id": "demo-room-3",
+      "title": "Affordable PG near HSR Layout",
+      "location": "HSR Layout, Bangalore",
+      "type": "PG",
+      "price": 16500,
+      "image": "images/demo/room-3.jpg",
+      "description": "Clean PG room for students and interns with food options nearby, WiFi, laundry support, and good bus connectivity.",
+      "amenities": ["WiFi", "Washing Machine", "Parking"],
+      "roommatePreference": "Female student preferred",
+      "moveInDate": "2026-07-01",
+      "ownerName": "Isha Nair"
     },
     {
-      "id": 3,
-      "title": "Modern 1BR in Tech Hub",
-      "location": "Austin, TX",
+      "id": "demo-room-4",
+      "title": "Studio Apartment near Hitech City",
+      "location": "Madhapur, Hyderabad",
+      "type": "Studio Apartment",
+      "price": 24000,
+      "image": "images/demo/room-4.jpg",
+      "description": "Modern compact studio with WiFi, attached bathroom, workstation corner, and easy commute to Hitech City offices.",
+      "amenities": ["WiFi", "Attached Bathroom", "AC"],
+      "roommatePreference": "Single occupancy",
+      "moveInDate": "2026-06-20",
+      "ownerName": "Kabir Sood"
+    },
+    {
+      "id": "demo-room-5",
+      "title": "Shared Room near North Campus",
+      "location": "Kamla Nagar, Delhi",
+      "type": "Shared Apartment",
+      "price": 12500,
+      "image": "images/demo/room-5.jpg",
+      "description": "Affordable shared room for students near metro station, markets, libraries, and popular campus food spots.",
+      "amenities": ["WiFi", "Balcony", "Washing Machine"],
+      "roommatePreference": "Female roommate preferred",
+      "moveInDate": "2026-07-05",
+      "ownerName": "Meera Joshi"
+    },
+    {
+      "id": "demo-room-6",
+      "title": "Private Room in Koramangala 3BHK",
+      "location": "Koramangala, Bangalore",
       "type": "Private Room",
-      "price": 725,
-      "image": "images/room-1.svg",
-      "description": "New construction apartment with modern kitchen and in-unit laundry. Walking distance to restaurants and shops. No smoking. Lease starting June or August."
-    }
-  ],
-  "users": [
-    {
-      "id": 1,
-      "profileId": 1,
-      "email": "aisha@example.com",
-      "password": "demo123"
+      "price": 23000,
+      "image": "images/demo/room-6.jpg",
+      "description": "Spacious private room in a 3BHK with fast WiFi, balcony access, washing machine, and plenty of food options nearby.",
+      "amenities": ["WiFi", "Balcony", "Washing Machine", "Parking"],
+      "roommatePreference": "Working professional preferred",
+      "moveInDate": "2026-06-18",
+      "ownerName": "Arjun Rao"
     },
     {
-      "id": 2,
-      "profileId": 2,
-      "email": "marcus@example.com",
-      "password": "demo123"
+      "id": "demo-room-7",
+      "title": "Furnished PG in Bandra East",
+      "location": "Bandra East, Mumbai",
+      "type": "PG",
+      "price": 21000,
+      "image": "images/demo/room-1.jpg",
+      "description": "Well-maintained PG with furnished beds, common kitchen, good security, and quick access to BKC and local trains.",
+      "amenities": ["WiFi", "AC", "Washing Machine"],
+      "roommatePreference": "Female roommate preferred",
+      "moveInDate": "2026-06-25",
+      "ownerName": "Sana Sheikh"
+    },
+    {
+      "id": "demo-room-8",
+      "title": "Budget Room near Kothrud Depot",
+      "location": "Kothrud, Pune",
+      "type": "Private Room",
+      "price": 13500,
+      "image": "images/demo/room-2.jpg",
+      "description": "Simple furnished room for students with study table, cupboard, WiFi, and quick access to MIT and Paud Road.",
+      "amenities": ["WiFi", "Parking", "Washing Machine"],
+      "roommatePreference": "Male student preferred",
+      "moveInDate": "2026-07-10",
+      "ownerName": "Dev Patel"
+    },
+    {
+      "id": "demo-room-9",
+      "title": "Modern Room in Gachibowli Apartment",
+      "location": "Gachibowli, Hyderabad",
+      "type": "Private Room",
+      "price": 25500,
+      "image": "images/demo/room-3.jpg",
+      "description": "Modern apartment with WiFi, attached bathroom, balcony, and peaceful work-from-home setup near IT offices.",
+      "amenities": ["WiFi", "Attached Bathroom", "Balcony", "AC"],
+      "roommatePreference": "Working women preferred",
+      "moveInDate": "2026-06-30",
+      "ownerName": "Priya Menon"
+    },
+    {
+      "id": "demo-room-10",
+      "title": "Student Flat near Saket Metro",
+      "location": "Saket, Delhi",
+      "type": "Shared Apartment",
+      "price": 18000,
+      "image": "images/demo/room-4.jpg",
+      "description": "Comfortable shared apartment near metro with a calm study environment, furnished room, and active market nearby.",
+      "amenities": ["WiFi", "AC", "Parking"],
+      "roommatePreference": "Male roommate preferred",
+      "moveInDate": "2026-07-15",
+      "ownerName": "Nikhil Verma"
     }
   ]
 }

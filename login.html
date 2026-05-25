@@ -3,11 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login / Register — RoomieSync</title>
+  <title>Login / Register - RoomieSync</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <!-- Animated background elements -->
+  <div class="glow-blob-1"></div>
+  <div class="glow-blob-2"></div>
+  
   <header class="site-header">
     <div class="container nav-row">
       <a class="logo" href="index.html">RoomieSync</a>
@@ -64,6 +68,145 @@
             <label>Bio</label>
             <textarea id="registerBio" placeholder="Tell roommates a little about you" rows="3"></textarea>
           </div>
+          <div class="form-group">
+            <label>Profile Photo</label>
+            <input type="file" id="registerAvatar" accept="image/*">
+          </div>
+          <h4>Preferences</h4>
+          <div class="form-group">
+            <label>Preferred Roommate Gender</label>
+            <select id="registerPrefGender">
+              <option value="any">Any</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Budget Preference <span id="budgetValue">₹15,000</span></label>
+            <input type="range" id="registerBudget" min="5000" max="50000" step="500" value="15000">
+          </div>
+          <div class="form-group">
+            <label>Food Preference</label>
+            <select id="registerFoodPref">
+              <option value="any">Any</option>
+              <option value="vegetarian">Vegetarian</option>
+              <option value="non-vegetarian">Non-vegetarian</option>
+              <option value="vegan">Vegan</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Smoking</label>
+            <select id="registerSmoking">
+              <option value="no">Non-Smoker</option>
+              <option value="yes">Smoker</option>
+              <option value="occasionally">Occasionally</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Drinking</label>
+            <select id="registerDrinking">
+              <option value="no">Does not drink</option>
+              <option value="social">Social drinker</option>
+              <option value="often">Often</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Pets</label>
+            <select id="registerPets">
+              <option value="no">No pets</option>
+              <option value="yes">Has pets / pet friendly</option>
+              <option value="maybe">Open to pets</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Sleep Schedule</label>
+            <select id="registerSleep">
+              <option value="any">Any</option>
+              <option value="early">Early sleeper</option>
+              <option value="night">Night owl</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Cleanliness Level</label>
+            <input type="range" id="registerCleanliness" min="1" max="5" step="1" value="3">
+          </div>
+          <div class="form-group">
+            <label>Occupation</label>
+            <input type="text" id="registerOccupation" placeholder="Student / Working professional">
+          </div>
+          <div class="form-group">
+            <label>Move-in Date</label>
+            <input type="date" id="registerMoveIn">
+          </div>
+          <div class="form-group">
+            <label>Preferred Environment</label>
+            <select id="registerEnvironment">
+              <option value="mixed">Mixed</option>
+              <option value="quiet">Quiet</option>
+              <option value="social">Social</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Languages (comma separated)</label>
+            <input type="text" id="registerLanguages" placeholder="English, Spanish">
+          </div>
+          <div class="form-group">
+            <label>Lifestyle Tags</label>
+            <div class="tags-checkboxes">
+              <label><input type="checkbox" name="registerTag" value="Night Owl"> Night Owl</label>
+              <label><input type="checkbox" name="registerTag" value="Early Sleeper"> Early Sleeper</label>
+              <label><input type="checkbox" name="registerTag" value="Vegetarian"> Vegetarian</label>
+              <label><input type="checkbox" name="registerTag" value="Non-Smoker"> Non-Smoker</label>
+              <label><input type="checkbox" name="registerTag" value="Gamer"> Gamer</label>
+              <label><input type="checkbox" name="registerTag" value="Gym Lover"> Gym Lover</label>
+              <label><input type="checkbox" name="registerTag" value="Introvert"> Introvert</label>
+              <label><input type="checkbox" name="registerTag" value="Extrovert"> Extrovert</label>
+              <label><input type="checkbox" name="registerTag" value="Pet Friendly"> Pet Friendly</label>
+              <label><input type="checkbox" name="registerTag" value="Clean Freak"> Clean Freak</label>
+            </div>
+          </div>
+          <h4>Looking For</h4>
+          <div class="form-group">
+            <label>Preferred Gender</label>
+            <select id="registerLookingGender">
+              <option value="any">Any</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Student / Working Professional</label>
+            <select id="registerLookingStatus">
+              <option value="either">Either</option>
+              <option value="student">Student</option>
+              <option value="working">Working professional</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Smoking Preference</label>
+            <select id="registerLookingSmoking">
+              <option value="no">Non-Smoker</option>
+              <option value="any">Any</option>
+              <option value="yes">Smoker</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Cleanliness Expectation</label>
+            <select id="registerLookingCleanliness">
+              <option value="any">Any</option>
+              <option value="1">Very relaxed</option>
+              <option value="3">Moderate</option>
+              <option value="5">Very tidy</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Quiet / Social Environment</label>
+            <select id="registerLookingEnvironment">
+              <option value="any">Any</option>
+              <option value="quiet">Quiet</option>
+              <option value="social">Social</option>
+            </select>
+          </div>
           <div id="registerError" class="form-error"></div>
           <button class="btn" id="registerBtn" type="submit">Register</button>
         </form>
@@ -77,6 +220,11 @@
     </div>
   </footer>
 
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-storage-compat.js"></script>
+  <script src="firebase-config.js"></script>
   <script src="js/script.js"></script>
 </body>
 </html>
